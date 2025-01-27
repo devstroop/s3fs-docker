@@ -28,10 +28,3 @@ RUN dnf upgrade -y && \
 # Allow FUSE for all users
 # RUN echo "user_allow_other" >> /etc/fuse.conf
 RUN sed -i s/"#user_allow_other"/"user_allow_other"/g /etc/fuse.conf
-
-# Copy the entrypoint script
-COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
-
-# Set the entrypoint
-CMD /docker-entrypoint.sh

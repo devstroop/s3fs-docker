@@ -15,4 +15,5 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_REGION=${AWS_REGION}
-      - S3_BUCKET=$S3_BUCKET
+      - S3_BUCKET=${S3_BUCKET}
+    command: mkdir -p /mnt/$S3_BUCKET && s3-mount -f $S3_BUCKET /mnt/$S3_BUCKET --allow-other
