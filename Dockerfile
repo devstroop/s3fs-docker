@@ -26,9 +26,11 @@ RUN dnf upgrade -y && \
     rm mount-s3.rpm
 
 # Allow FUSE for all users
-RUN echo "user_allow_other" >> /etc/fuse.conf
+# RUN echo "user_allow_other" >> /etc/fuse.conf
+RUN sed -i s/"#user_allow_other"/"user_allow_other"/g /etc/fuse.conf
 
-RUN mkdir -p /mnt/s3
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /
 
-# Set the entrypoint to the mount-s3 command
-ENTRYPOINT ["mount-s3", "-f"]
+# Set the entrypoint
+CMD /docker-entrypoint.sh

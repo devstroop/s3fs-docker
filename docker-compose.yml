@@ -3,17 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: unless-stopped
     cap_add:
       - SYS_ADMIN
     devices:
       - "/dev/fuse:/dev/fuse"
     volumes:
-      - ${LOCAL_PATH}:/mnt:shared
+      - ${MOUNT_POINT}:/mnt:shared
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET=${S3_BUCKET}
-    command: ["${S3_BUCKET}", "/mnt/s3", "--allow-other"]
-    restart: unless-stopped
