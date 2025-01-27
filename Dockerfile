@@ -17,4 +17,4 @@ RUN alien -i /mount-s3.rpm && rm /mount-s3.rpm && \
     echo "user_allow_other" >> /etc/fuse.conf && \
     mkdir -p /mnt/s3
 
-CMD ["/bin/sh", "-c", "mount-s3", "-f", "/mnt/s3"]
+CMD ["mount-s3", "-f", "/mnt/s3"]
