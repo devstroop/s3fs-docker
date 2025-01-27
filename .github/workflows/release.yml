@@ -1,0 +1,23 @@
+name: Docker Hub Release
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to Docker Hub
+        run: docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ${{ secrets.DOCKERHUB_REF }}
+
+
+      - name: Build and tag Docker image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }} .
+
+      - name: Release Docker image to Docker Hub
+        run: docker push ${{ secrets.DOCKERHUB_REF }}
