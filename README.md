@@ -26,7 +26,7 @@ This repository contains a Docker setup to mount an S3 bucket using `mount-s3`.
     AWS_ACCESS_KEY_ID=<your-aws-access-key-id>
     AWS_SECRET_ACCESS_KEY=<your-aws-secret-access-key>
     AWS_REGION=<your-aws-region>
-    AWS_BUCKET=<your-aws-bucket>
+    S3_BUCKET=<your-aws-bucket>
     LOCAL_PATH=<your-local-path>
     ```
 

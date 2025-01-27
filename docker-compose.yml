@@ -14,5 +14,5 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_REGION=${AWS_REGION}
-      - AWS_BUCKET=${AWS_BUCKET}
+      - S3_BUCKET=${S3_BUCKET}
     restart: unless-stopped
