@@ -1,20 +1,40 @@
-# Stage 1: Download & verify mount-s3
-FROM alpine:3.18 AS builder
+# Use a minimal base image for the builder stage
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal as builder
 
-RUN apk add --no-cache wget gnupg
-RUN MP_ARCH=$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
-    wget -q "https://s3.amazonaws.com/mountpoint-s3-release/latest/$MP_ARCH/mount-s3.rpm" && \
-    wget -q "https://s3.amazonaws.com/mountpoint-s3-release/latest/$MP_ARCH/mount-s3.rpm.asc" && \
-    wget -q https://s3.amazonaws.com/mountpoint-s3-release/public_keys/KEYS && \
-    gpg --import KEYS && \
-    gpg --batch --verify mount-s3.rpm.asc mount-s3.rpm || { echo "GPG verification failed"; exit 1; }
+# Install necessary tools
+RUN microdnf install -y wget gnupg2 && \
+    microdnf clean all
 
-# Stage 2: Install
-FROM alpine:3.18
-RUN apk add --no-cache fuse rpm alien
+# Determine the architecture and download the RPM and its signature
+RUN MP_ARCH=$(uname -p | sed 's/aarch64/arm64/') && \
+    wget -q "https://s3.amazonaws.com/mountpoint-s3-release/latest/${MP_ARCH}/mount-s3.rpm" && \
+    wget -q "https://s3.amazonaws.com/mountpoint-s3-release/latest/${MP_ARCH}/mount-s3.rpm.asc" && \
+    wget -q https://s3.amazonaws.com/mountpoint-s3-release/public_keys/KEYS
+
+# Import the GPG key and verify the fingerprint
+RUN gpg --import KEYS && \
+    gpg --fingerprint mountpoint-s3@amazon.com | grep "673F E406 1506 BB46 9A0E  F857 BE39 7A52 B086 DA5A"
+
+# Verify the RPM signature
+RUN gpg --verify mount-s3.rpm.asc mount-s3.rpm
+
+# Use a minimal base image for the final stage
+FROM public.ecr.aws/amazonlinux/amazonlinux:2023-minimal
+
+# Copy the verified RPM from the builder stage
 COPY --from=builder /mount-s3.rpm /mount-s3.rpm
-RUN alien -i /mount-s3.rpm && rm /mount-s3.rpm && \
-    echo "user_allow_other" >> /etc/fuse.conf && \
-    mkdir -p /mnt/s3
 
-CMD ["mount-s3", "-f", "/mnt/s3"]
+# Install the RPM and clean up
+RUN microdnf upgrade -y && \
+    microdnf install -y fuse3 shadow-utils && \
+    microdnf install -y /mount-s3.rpm && \
+    microdnf clean all && \
+    rm -f /mount-s3.rpm
+
+# Allow FUSE for all users
+RUN echo "user_allow_other" >> /etc/fuse.conf
+
+RUN mkdir -p /mnt/s3
+
+# Set the entrypoint to the mount-s3 command
+ENTRYPOINT ["mount-s3", "-f", "${S3_BUCKET}", "/mnt/s3", "--allow-other"]
