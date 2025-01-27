@@ -15,4 +15,5 @@ services:
       - AWS_ENDPOINT_URL=${AWS_ENDPOINT_URL}
       - AWS_REGION=${AWS_REGION}
       - S3_BUCKET=${S3_BUCKET}
+    command: ["${S3_BUCKET}", "/mnt/s3", "--allow-other"]
     restart: unless-stopped

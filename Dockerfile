@@ -31,4 +31,4 @@ RUN echo "user_allow_other" >> /etc/fuse.conf
 RUN mkdir -p /mnt/s3
 
 # Set the entrypoint to the mount-s3 command
-ENTRYPOINT ["mount-s3", "-f", "${S3_BUCKET}", "/mnt/s3", "--allow-other"]
+ENTRYPOINT ["mount-s3", "-f"]
