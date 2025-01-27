@@ -7,7 +7,7 @@ RUN MP_ARCH=$(uname -m | sed s/aarch64/arm64/ | sed s/x86_64/amd64/) && \
     wget -q "https://s3.amazonaws.com/mountpoint-s3-release/latest/$MP_ARCH/mount-s3.rpm.asc" && \
     wget -q https://s3.amazonaws.com/mountpoint-s3-release/public_keys/KEYS && \
     gpg --import KEYS && \
-    gpg --verify mount-s3.rpm.asc mount-s3.rpm
+    gpg --batch --verify mount-s3.rpm.asc mount-s3.rpm
 
 # Stage 2: Install
 FROM alpine:3.18
